@@ -19,6 +19,7 @@ void sysinit(void){
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
 }
 
+/*
 void calcTemp(void){
 	t = readt();
 	unsigned char a=1;
@@ -28,8 +29,8 @@ void calcTemp(void){
 	}
 	high = t/16*a;
 	low = t%16;
-	//l = low * 0.0625;
 }
+*/
 
 void printMainMenu(void){
 	lcd_clear();
@@ -41,9 +42,12 @@ void printMainMenu(void){
 int main(void){
 	sysinit();
 	while(1){
-		calcTemp();
-		sprintf(hstr,"%d.%04d",high,low*625);
-		//sprintf(lstr,"%d",t);
+		//calcTemp();
+		t = readt();
+		//sprintf(hstr,"%d.%04d",high,low*625);
+		sprintf(hstr,"%d.%04d",(t>>4),(t%16)*625);
+		hstr[5] = 0;
+		hstr[6] = 0;
 		printMainMenu();
 		delay_ms(1000);
 	}
