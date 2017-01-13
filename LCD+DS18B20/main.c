@@ -7,7 +7,7 @@
 #include "lcd.h"
 #include "onewire.h"
 #include <stdio.h>
-//#include <avr/iom8.h>
+#include "eeprom.h"
 
 #define F_CPU 8000000UL
 
@@ -18,7 +18,6 @@ char hstr[15], lstr[15];
 void sysinit(void){
 	lcd_init();
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
-
 }
 
 void calcTemp(void){
@@ -43,8 +42,7 @@ int main(void){
 	sysinit();
 	while(1){
 		calcTemp();
-		sprintf(hstr,"%X",t);
-		sprintf(lstr,"%d.%d",high,low);
+		sprintf(hstr,"%d.%d",high,low);
 		printMainMenu();
 		delay_ms(1000);
 	}

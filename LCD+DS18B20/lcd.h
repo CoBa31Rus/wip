@@ -7,7 +7,6 @@
 
 #ifndef LCD_H_
 	#define LCD_H_
-	//#include <avr/iom8.h>
 	#include <avr/io.h>
 	#include <util/delay.h>
 

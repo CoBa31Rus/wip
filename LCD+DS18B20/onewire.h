@@ -9,7 +9,6 @@
 	#define ONEWIRE_H_
 
 	#include <avr/io.h>
-	//#include <avr/iom8.h>
 	#include <avr/pgmspace.h>
 	#include <util/delay.h>
 
