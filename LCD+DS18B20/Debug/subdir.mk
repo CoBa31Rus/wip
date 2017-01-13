@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../eeprom.c \
 ../lcd.c \
 ../main.c \
 ../onewire.c 
 
 OBJS += \
+./eeprom.o \
 ./lcd.o \
 ./main.o \
 ./onewire.o 
 
 C_DEPS += \
+./eeprom.d \
 ./lcd.d \
 ./main.d \
 ./onewire.d 

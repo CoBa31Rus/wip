@@ -12,8 +12,7 @@
 #define F_CPU 8000000UL
 
 int t;
-char high,low;
-char hstr[15], lstr[15];
+char high,low, hstr[15], lstr[15];
 
 void sysinit(void){
 	lcd_init();
@@ -29,6 +28,7 @@ void calcTemp(void){
 	}
 	high = t/16*a;
 	low = t%16;
+	//l = low * 0.0625;
 }
 
 void printMainMenu(void){
@@ -42,7 +42,8 @@ int main(void){
 	sysinit();
 	while(1){
 		calcTemp();
-		sprintf(hstr,"%d.%d",high,low);
+		sprintf(hstr,"%d.%04d",high,low*625);
+		//sprintf(lstr,"%d",t);
 		printMainMenu();
 		delay_ms(1000);
 	}
