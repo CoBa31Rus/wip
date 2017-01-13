@@ -7,7 +7,7 @@
 #include "lcd.h"
 #include "onewire.h"
 #include <stdio.h>
-#include <avr/iom8.h>
+//#include <avr/iom8.h>
 
 #define F_CPU 8000000UL
 
