@@ -49,6 +49,6 @@ int main(void){
 		hstr[5] = 0;
 		hstr[6] = 0;
 		printMainMenu();
-		delay_ms(1000);
+		delay_ms(700);
 	}
 }
