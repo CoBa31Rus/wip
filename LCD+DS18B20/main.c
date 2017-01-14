@@ -47,6 +47,10 @@ ISR(TIMER0_OVF_vect){
 				cou--;
 				pushed_buttons = KEY_UNP;
 			}
+			if(pushed_buttons == KEY_CEN){
+				cou = 0;
+				pushed_buttons = KEY_UNP;
+			}
 		}
 		else
 			pushed_buttons = KEY_UNP;
