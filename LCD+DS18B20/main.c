@@ -82,7 +82,7 @@ int main(void){
 	sysinit();
 	while(1){
 		real_temperature = readt();
-		//cou = update_pid(need_temperature, real_temperature);
+		cou = update_pid(need_temperature, real_temperature);
 		HEATER = cou;
 		sprintf(hstr,"%d.%04d",(real_temperature>>4),(real_temperature%16)*625);
 		hstr[5] = 0;
