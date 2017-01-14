@@ -15,5 +15,6 @@
 	#define KEY_CEN			0b101
 	#define KEY_UNP			0b111
 
+	unsigned char pushedButton(unsigned char data);
 
 #endif /* BUTTON_H_ */

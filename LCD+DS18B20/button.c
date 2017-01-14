@@ -7,12 +7,13 @@
 
 #include "button.h"
 
-uint8_t button_tmp = KEY_UNP;
+unsigned char button_tmp = KEY_UNP;
 
-uint8_t pushedButton(char data){
-	if (data==KEY_UNP)
+unsigned char pushedButton(unsigned char data){
+	if (data==KEY_UNP){
 		button_tmp = KEY_UNP;
 		return KEY_UNP;
+	}
 	if (data == button_tmp){
 		return data;
 		button_tmp = KEY_UNP;
