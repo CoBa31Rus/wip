@@ -8,21 +8,24 @@ C_SRCS += \
 ../eeprom.c \
 ../lcd.c \
 ../main.c \
-../onewire.c 
+../onewire.c \
+../pid.c 
 
 OBJS += \
 ./button.o \
 ./eeprom.o \
 ./lcd.o \
 ./main.o \
-./onewire.o 
+./onewire.o \
+./pid.o 
 
 C_DEPS += \
 ./button.d \
 ./eeprom.d \
 ./lcd.d \
 ./main.d \
-./onewire.d 
+./onewire.d \
+./pid.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
