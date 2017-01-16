@@ -15,11 +15,12 @@
 #define F_CPU 8000000UL
 #define OVF_BUF_COUNT 3 //кол-во переполнений таймера для проверки клавиш
 #define HEATER OCR1A
+#define PID_OVF	200
 
 int real_temperature; //Переменная хранящая теипературу
 int need_temperature = 600; //Установленная температура
 char hstr[15], lstr[15]; //Строки выводимые на дисплей
-volatile unsigned char buffer_overflow = 0, tmp_buttons, pushed_buttons;
+volatile unsigned char buffer_overflow = 0, buffer_pid_ovf = 0, tmp_buttons, pushed_buttons;
 
 int cou = 0; //Тестовая переменная
 
@@ -27,7 +28,7 @@ void sysinit(void){
 	//Таймер обработчик клавиш
 		//Настройка таймера
 	TIMSK |= (1<<TOIE0);
-	TCCR0 |= (1<<CS00)|(0<<CS01)|(1<<CS02);
+	TCCR0 |= (1<<CS00)|(0<<CS01)|(1<<CS02); //0,03264 ms
 		//Настройка порта на ввод
 	DDRB &= ~1<<7;
 	DDRB &= ~1<<6;
@@ -43,11 +44,11 @@ void sysinit(void){
 	//Порт 1Wire
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
 	//ПИД регулятор
-	pid_init(2,1,1);
+	pid_init(2,1,4);
 }
 
 ISR(TIMER0_OVF_vect){
-	if (buffer_overflow >= OVF_BUF_COUNT){
+	if (buffer_overflow >= OVF_BUF_COUNT){ //Срабатывание 0.03264 * OVF_BUF_COUNT ms
 		tmp_buttons = pushedButton(PINB>>5);
 		if (tmp_buttons != KEY_UNP){
 			pushed_buttons = tmp_buttons;
@@ -71,6 +72,11 @@ ISR(TIMER0_OVF_vect){
 	else{
 		buffer_overflow++;
 	}
+	if(buffer_pid_ovf == PID_OVF){	// Срабатывание 0.03264 * PID_OVF ms
+		cou = calc_pwm(need_temperature, real_temperature);
+		buffer_pid_ovf = 0;
+	}
+	buffer_pid_ovf++;
 }
 
 void printMainMenu(void){
@@ -84,7 +90,7 @@ int main(void){
 	sysinit();
 	while(1){
 		real_temperature = readt();
-		cou = calc_pwm(need_temperature, real_temperature);
+
 		HEATER = cou;
 		sprintf(hstr,"%d.%04d",(real_temperature>>4),(real_temperature%16)*625);
 		hstr[5] = 0;
