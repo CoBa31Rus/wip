@@ -17,11 +17,11 @@
 #define HEATER OCR1A
 
 int real_temperature; //Переменная хранящая теипературу
-int need_temperature = 500; //Установленная температура
+int need_temperature = 600; //Установленная температура
 char hstr[15], lstr[15]; //Строки выводимые на дисплей
 volatile unsigned char buffer_overflow = 0, tmp_buttons, pushed_buttons;
 
-unsigned char cou = 0; //Тестовая переменная
+int cou = 0; //Тестовая переменная
 
 void sysinit(void){
 	//Таймер обработчик клавиш
@@ -42,6 +42,8 @@ void sysinit(void){
 	lcd_init();
 	//Порт 1Wire
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
+	//ПИД регулятор
+	pid_init(2,1,1);
 }
 
 ISR(TIMER0_OVF_vect){
@@ -82,12 +84,12 @@ int main(void){
 	sysinit();
 	while(1){
 		real_temperature = readt();
-		cou = update_pid(need_temperature, real_temperature);
+		cou = calc_pwm(need_temperature, real_temperature);
 		HEATER = cou;
 		sprintf(hstr,"%d.%04d",(real_temperature>>4),(real_temperature%16)*625);
 		hstr[5] = 0;
 		hstr[6] = 0;
-		sprintf(lstr, "%d", cou);
+		sprintf(lstr, "%d_%d", cou,real_temperature);
 		printMainMenu();
 		delay_ms(700);
 	}

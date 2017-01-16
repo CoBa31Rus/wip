@@ -1,21 +1,50 @@
-/*
- * pid.c
- *
- *  Created on: 14 янв. 2017 г.
- *      Author: coba31rus
- */
 
 #include "pid.h"
 
-int err;
-unsigned char tmp_pid, p_const = 1;
+unsigned char pK = 0, iK = 0, dK = 0; //Коэффициенты
+int pres, ires, dres; //Состовляющие регулятора
+int lastTerm;
+char sumError;
 
-unsigned char update_pid(int n_temp, int r_temp){
-	err = n_temp - r_temp;
-	if(err<0)
-		return 0;
-	tmp_pid = 0;
-	tmp_pid += p_const*err;
+void pid_init(unsigned char _pK, unsigned char _iK, unsigned char _dK){
+	pK = _pK;
+	iK = _iK;
+	dK = _dK;
+	lastTerm =0;
+	sumError = 0;
+}
 
-	return tmp_pid;
+unsigned char calc_pwm(int needT, int realT){
+	int err, tmp;
+
+	err = needT - realT;
+	//Пропорцианальный
+	pres = pK * err;
+	if(pres > MAX_PRES)
+		pres = MAX_PRES;
+	if(pres < -MAX_PRES)
+		pres = -MAX_PRES;
+
+	//Интегральный
+	tmp = sumError + err;
+	if(tmp > MAX_ERR)
+		tmp = MAX_ERR;
+	if(tmp < -MAX_ERR)
+		tmp = -MAX_ERR;
+	ires = tmp * iK;
+	sumError = tmp;
+
+	//Дифференциальный
+	dres = dK * (lastTerm - realT);
+	lastTerm = realT;
+
+	//Результирующий
+	tmp = (pres + ires + dres) / SCALING;
+
+	if(tmp > MAX_PID)
+		tmp = MAX_PID;
+	if(tmp < MIN_PID)
+		tmp = MIN_PID;
+
+	return tmp;
 }
