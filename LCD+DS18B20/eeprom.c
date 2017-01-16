@@ -20,3 +20,8 @@ unsigned char EEPROM_read(unsigned int uiAddress){
 	EECR |= (1<<EERE);
 	return EEDR;
 }
+/*
+int EEPROM_int(unsigned int uiAddress){
+
+}
+*/
