@@ -16,6 +16,6 @@
 		char sumError;
 	}pidData_t;
 
-	//void pid_init(unsigned char _pK, unsigned char _iK, unsigned char _dK);
-	unsigned char calc_pwm(int needT, int realT, pidData_t* p);
+	void pid_init(unsigned char _pK, unsigned char _iK, unsigned char _dK);
+	unsigned char calc_pwm(int needT, int realT);
 #endif

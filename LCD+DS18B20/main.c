@@ -11,9 +11,8 @@ int real_temperature; //Переменная хранящая теиперату
 int need_temperature = 600; //Установленная температура
 char hstr[15], lstr[15], menu = 0, menu_sel = 0; //Строки выводимые на дисплей
 volatile unsigned char buffer_overflow = 0, buffer_pid_ovf = 0, tmp_buttons, pushed_buttons;
-//unsigned char kp = 2, ki = 1, kd = 3;
+unsigned char kp = 2, ki = 1, kd = 3;
 int cou = 0; //Тестовая переменная
-pidData_t* pid;
 
 void sysinit(void){
 	//Таймер обработчик клавиш
@@ -35,10 +34,7 @@ void sysinit(void){
 	//Порт 1Wire
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
 	//ПИД регулятор
-	pid->pK = 2;
-	pid->iK = 1;
-	pid->dK = 3;
-	//pid_init(kp,ki,kd);
+	pid_init(kp,ki,kd);
 }
 
 void key_plus(void){
@@ -54,19 +50,19 @@ void key_plus(void){
 			break;
 		case 2:
 			if(menu_sel)
-				pid->pK++;
+				kp++;
 			else
 				menu++;
 			break;
 		case 3:
 			if(menu_sel)
-				pid->iK++;
+				ki++;
 			else
 				menu++;
 			break;
 		case 4:
 			if(menu_sel)
-				pid->dK++;
+				kd++;
 			else
 				menu++;
 			break;
@@ -95,19 +91,19 @@ void key_minus(void){
 			break;
 		case 2:
 			if(menu_sel)
-				pid->pK--;
+				kp--;
 			else
 				menu--;
 			break;
 		case 3:
 			if(menu_sel)
-				pid->iK--;
+				ki--;
 			else
 				menu--;
 			break;
 		case 4:
 			if(menu_sel)
-				pid->dK--;
+				kd--;
 			else
 				menu--;
 			break;
@@ -130,18 +126,22 @@ ISR(TIMER0_OVF_vect){
 		if (tmp_buttons != KEY_UNP){
 			pushed_buttons = tmp_buttons;
 			if(pushed_buttons == KEY_UP){
+				while((PINB>>5)!=KEY_UNP);
 				key_plus();
 				pushed_buttons = KEY_UNP;
 			}
 			if(pushed_buttons == KEY_DOW){
+				while((PINB>>5)!=KEY_UNP);
 				key_minus();
 				pushed_buttons = KEY_UNP;
 			}
 			if(pushed_buttons == KEY_CEN){
+				while((PINB>>5)!=KEY_UNP);
 				if(menu != 0)
 					menu_sel = !menu_sel;
 				pushed_buttons = KEY_UNP;
 			}
+			pid_init(kp,ki,kd);
 		}
 		else
 			pushed_buttons = KEY_UNP;
@@ -155,7 +155,7 @@ ISR(TIMER0_OVF_vect){
 
 	//
 	if(buffer_pid_ovf == PID_OVF){	// Срабатывание 0.03264 * PID_OVF ms
-		cou = calc_pwm(need_temperature, real_temperature, pid);
+		cou = calc_pwm(need_temperature, real_temperature);
 		buffer_pid_ovf = 0;
 	}
 	buffer_pid_ovf++;
@@ -189,15 +189,15 @@ int main(void){
 				break;
 			case 2:
 				sprintf(hstr, "%s","Set kp:");
-				sprintf(lstr,"%d",pid->pK);
+				sprintf(lstr,"%d",kp);
 				break;
 			case 3:
 				sprintf(hstr, "%s","Set ki:");
-				sprintf(lstr,"%d",pid->iK);
+				sprintf(lstr,"%d",ki);
 				break;
 			case 4:
 				sprintf(hstr, "%s","Set kd:");
-				sprintf(lstr,"%d",pid->dK);
+				sprintf(lstr,"%d",kd);
 				break;
 			case 5:
 				sprintf(hstr, "%s","Set time:");
@@ -205,6 +205,6 @@ int main(void){
 				break;
 		}
 		printMainMenu();
-		delay_ms(1500);
+		delay_ms(700);
 	}
 }
