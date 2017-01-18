@@ -122,6 +122,7 @@ void key_minus(void){
 ISR(TIMER0_OVF_vect){
 
 	if (buffer_overflow >= OVF_BUF_COUNT){ //Срабатывание 0.03264 * OVF_BUF_COUNT ms
+		real_temperature = readt();
 		tmp_buttons = pushedButton(PINB>>5);
 		if (tmp_buttons != KEY_UNP){
 			pushed_buttons = tmp_buttons;
@@ -165,13 +166,16 @@ void printMainMenu(void){
 	lcd_clear();
 	lcd_str_out(hstr);
 	lcd_gotoxy(0,1);
+	if(menu_sel)
+		if(menu)
+			lcd_char_out(0x3E);
 	lcd_str_out(lstr);
 }
 
 int main(void){
 	sysinit();
 	while(1){
-		real_temperature = readt();
+		//real_temperature = readt();
 		HEATER = cou;
 
 		switch (menu){
@@ -204,6 +208,7 @@ int main(void){
 				sprintf(lstr,"%d",buffer_pid_ovf);
 				break;
 		}
+
 		printMainMenu();
 		delay_ms(700);
 	}
