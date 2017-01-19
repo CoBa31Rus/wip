@@ -7,12 +7,11 @@
 #include "main.h"
 
 
-int real_temperature; //Переменная хранящая теипературу
-int need_temperature = 600; //Установленная температура
-char hstr[LCD_LINE_SIZE], lstr[LCD_LINE_SIZE], tmp_hstr[LCD_LINE_SIZE], tmp_lstr[LCD_LINE_SIZE], menu = 0, menu_sel = 0; //Строки выводимые на дисплей
-volatile unsigned char buffer_key_ovf = 0, buffer_pid_ovf = 0, buffer_tem_ovf = 0, update = 0, tmp_buttons, pushed_buttons;
-unsigned char kp = 4, ki = 1, kd = 3;
-int cou = 0; //Тестовая переменная
+int real_temperature, need_temperature = 600;
+char hstr[LCD_LINE_SIZE], lstr[LCD_LINE_SIZE], menu = 0, menu_sel = 0; //Строки выводимые на дисплей
+volatile unsigned char buffer_key_ovf = 0, buffer_pid_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, pid_time = 200;
+unsigned char kp = 4, ki = 1, kd = 3, cou = 0;
+
 
 void sysinit(void){
 	//Таймер обработчик клавиш
@@ -68,7 +67,7 @@ void key_plus(void){
 			break;
 		case 5:
 			if(menu_sel)
-				buffer_pid_ovf++;
+				pid_time++;
 			else
 				menu++;
 			break;
@@ -109,7 +108,7 @@ void key_minus(void){
 			break;
 		case 5:
 			if(menu_sel)
-				buffer_pid_ovf--;
+				pid_time--;
 			else
 				menu--;
 			break;
@@ -154,7 +153,7 @@ ISR(TIMER0_OVF_vect){
 		buffer_tem_ovf = 0;
 	}
 	//
-	if(buffer_pid_ovf == PID_OVF){	// Срабатывание 0.03264 * PID_OVF ms
+	if(buffer_pid_ovf == pid_time){	// Срабатывание 0.03264 * PID_OVF ms
 		cou = calc_pwm(need_temperature, real_temperature);
 		buffer_pid_ovf = 0;
 	}
@@ -201,8 +200,8 @@ int main(void){
 				sprintf(lstr," %d",kd);
 				break;
 			case 5:
-				sprintf(hstr, " %s","Set time:");
-				sprintf(lstr," %d",buffer_pid_ovf);
+				sprintf(hstr, " %s","Set PID time:");
+				sprintf(lstr," %d",pid_time);
 				break;
 		}
 		if(menu_sel)

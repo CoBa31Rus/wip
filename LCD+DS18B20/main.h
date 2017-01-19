@@ -21,6 +21,6 @@
 	#define TEMP_UPDATE 2
 	#define HEATER OCR1A
 	#define PID_OVF	200
-	#define MENUCOUNT 4
+	#define MENUCOUNT 5
 
 #endif /* MAIN_H_ */
