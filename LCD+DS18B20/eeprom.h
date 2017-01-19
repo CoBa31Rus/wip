@@ -11,7 +11,7 @@
 
 
 	void EEPROM_write(unsigned int uiAddress, unsigned char ucData);
-	unsigned char EEPROM_read(unsigned int uiAddress);
-
+	unsigned char EEPROM_read_char(unsigned int uiAddress);
+	//int EEPROM_read_int(unsigned int uiAddress);
 
 #endif /* EEPROM_H_ */
