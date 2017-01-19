@@ -181,33 +181,33 @@ int main(void){
 			HEATER = cou;
 		switch (menu){
 			case 0:
-				sprintf(hstr,"t= %d.%02d",(real_temperature>>4),(real_temperature%16)*625/100);
-				sprintf(lstr, "H %d%%", cou*100/255);
+				sprintf(hstr,"t=%d.%02d",(real_temperature>>4),(real_temperature%16)*625/100);
+				sprintf(lstr, "H=%d%%", cou*100/255);
 				break;
 			case 1:
-				sprintf(hstr, "%s","Set temp:");
-				sprintf(lstr,"t %d.%02d",(need_temperature>>4),(need_temperature%16)*625/100);
+				sprintf(hstr, " %s","Set temp:");
+				sprintf(lstr," %d.%02d",(need_temperature>>4),(need_temperature%16)*625/100);
 				break;
 			case 2:
-				sprintf(hstr, "%s","Set kp:");
-				sprintf(lstr,"% d",kp);
+				sprintf(hstr, " %s","Set kp:");
+				sprintf(lstr," %d",kp);
 				break;
 			case 3:
-				sprintf(hstr, "%s","Set ki:");
-				sprintf(lstr,"% d",ki);
+				sprintf(hstr, " %s","Set ki:");
+				sprintf(lstr," %d",ki);
 				break;
 			case 4:
-				sprintf(hstr, "%s","Set kd:");
-				sprintf(lstr,"% d",kd);
+				sprintf(hstr, " %s","Set kd:");
+				sprintf(lstr," %d",kd);
 				break;
 			case 5:
-				sprintf(hstr, "%s","Set time:");
-				sprintf(lstr,"% d",buffer_pid_ovf);
+				sprintf(hstr, " %s","Set time:");
+				sprintf(lstr," %d",buffer_pid_ovf);
 				break;
 		}
 		if(menu_sel)
 			if(menu)
-				lstr[1] = 0x3E;
+				lstr[0] = 0x3E;
 
 		printMainMenu();
 		delay_ms(400);
