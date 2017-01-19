@@ -34,7 +34,8 @@ uint8_t onewire_reset()
   for (uint8_t c = 80; c; c--) {
     if (!onewire_level()) {
       // Если обнаружен импульс присутствия, ждём его окончания
-      while (!onewire_level()) { } // Ждём конца сигнала присутствия
+      //while (!onewire_level()) {} // Ждём конца сигнала присутствия
+    	_delay_ms(2);
       return 1;
     }
     _delay_us(1);

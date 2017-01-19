@@ -47,7 +47,7 @@ void lcd_com(BYTE com){
 	lcd_out(com);
 	lcd_set_e();
 	lcd_clear_e();
-	delay_ms(4);
+	delay_ms(2);
 }
 
 void lcd_init(void){
@@ -82,7 +82,7 @@ void lcd_char_out(char data){
 	lcd_out(data & 0x0F);
 	lcd_set_e();
 	lcd_clear_e();
-	delay_ms(4);
+	delay_ms(2);
 }
 
 void lcd_clear(){

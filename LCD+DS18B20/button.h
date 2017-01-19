@@ -9,7 +9,6 @@
 	#define BUTTON_H_
 
 	#include <avr/io.h>
-	#define F_CPU			8000000UL
 	#define KEY_UP			0b110
 	#define KEY_DOW			0b011
 	#define KEY_CEN			0b101
