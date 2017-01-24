@@ -33,6 +33,10 @@ void sysinit(void){
 	//Порт 1Wire
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
 	//ПИД регулятор
+	kp = EEPROM_read_char(0x0);
+	ki = EEPROM_read_char(0x1);
+	kd = EEPROM_read_char(0x2);
+	need_temperature = EEPROM_read_int(0x3);
 	pid_init(kp,ki,kd);
 }
 
@@ -136,8 +140,15 @@ ISR(TIMER0_OVF_vect){
 			}
 			if(pushed_buttons == KEY_CEN){
 				//while((PINB>>5)!=KEY_UNP);
-				if(menu != 0)
+				if(menu != 0){
+					if(menu_sel){
+						EEPROM_write(0x0, kp);
+						EEPROM_write(0x1, ki);
+						EEPROM_write(0x2, kd);
+						EEPROM_write_int(0x3, need_temperature);
+					}
 					menu_sel = !menu_sel;
+				}
 				pushed_buttons = KEY_UNP;
 			}
 			pid_init(kp,ki,kd);
