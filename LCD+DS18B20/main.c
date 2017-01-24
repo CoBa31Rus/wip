@@ -12,7 +12,6 @@ char hstr[LCD_LINE_SIZE], lstr[LCD_LINE_SIZE], menu = 0, menu_sel = 0; //Стр�
 volatile unsigned char buffer_key_ovf = 0, buffer_pid_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, pid_time = 200;
 unsigned char kp = 4, ki = 1, kd = 3, cou = 0;
 
-
 void sysinit(void){
 	//Таймер обработчик клавиш
 		//Настройка таймера
@@ -37,6 +36,7 @@ void sysinit(void){
 	ki = EEPROM_read_char(0x1);
 	kd = EEPROM_read_char(0x2);
 	need_temperature = EEPROM_read_int(0x3);
+	pid_time = EEPROM_read_char(0x5);
 	pid_init(kp,ki,kd);
 }
 
@@ -146,6 +146,7 @@ ISR(TIMER0_OVF_vect){
 						EEPROM_write(0x1, ki);
 						EEPROM_write(0x2, kd);
 						EEPROM_write_int(0x3, need_temperature);
+						EEPROM_write(0x5, pid_time);
 					}
 					menu_sel = !menu_sel;
 				}
