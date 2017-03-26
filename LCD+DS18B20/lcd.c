@@ -8,38 +8,38 @@
 #include "lcd.h"
 
 void lcd_out(BYTE data){
+	if(data & 0x08)
+	{
+		LCD_PIN |= (1 << 7);
+	}
+	else
+	{
+		LCD_PIN &= ~(1 << 7);
+	}
+	if(data & 0x04)
+	{
+		LCD_PIN |= (1 << 6);
+	}
+	else
+	{
+		LCD_PIN &= ~(1 << 6);
+	}
+	if(data & 0x02)
+	{
+		LCD_PIN |= (1 << 5);
+	}
+	else
+	{
+		LCD_PIN &= ~(1 << 5);
+	}
 	if(data & 0x01)
-		{
-			LCD_PIN |= (1 << 2);
-		}
-		else
-		{
-			LCD_PIN &= ~(1 << 2);
-		}
-		if(data & 0x02)
-		{
-			LCD_PIN |= (1 << 3);
-		}
-		else
-		{
-			LCD_PIN &= ~(1 << 3);
-		}
-		if(data & 0x04)
-		{
-			LCD_PIN |= (1 << 4);
-		}
-		else
-		{
-			LCD_PIN &= ~(1 << 4);
-		}
-		if(data & 0x08)
-		{
-			LCD_PIN |= (1 << 5);
-		}
-		else
-		{
-			LCD_PIN &= ~(1 << 5);
-		}
+	{
+		LCD_PIN |= (1 << 4);
+	}
+	else
+	{
+		LCD_PIN &= ~(1 << 4);
+	}
 }
 
 void lcd_com(BYTE com){

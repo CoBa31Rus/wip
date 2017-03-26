@@ -161,7 +161,7 @@ ISR(TIMER0_OVF_vect){
 
 	if(buffer_tem_ovf == TEMP_UPDATE){
 		real_temperature = 0x8000;
-		real_temperature = readt();
+		//real_temperature = readt();
 		buffer_tem_ovf = 0;
 	}
 	//
