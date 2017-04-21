@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean upload
 
 TARG=inkubator
 SRCS= main.c lcd.c onewire.c pid.c eeprom.c button.c
@@ -9,8 +9,11 @@ OBJCOPY = avr-objcopy
 
 OBJS = $(SRCS:.c=.o)
 MCU=atmega8
-CFLAGS = -mmcu=$(MCU) -std=gnu99 -DF_CPU=8000000UL -Wall -g -Os -Werror -lm  -mcall-prologues
-LDFLAGS = -mmcu=$(MCU)  -Wall -g -Os  -Werror 
+CFLAGS += -mmcu=$(MCU) -std=gnu99 -gdwarf-2 -DF_CPU=8000000UL -Os
+LDFLAGS += -mmcu=$(MCU)
+
+upload: $(TARG).hex
+	avrdude -p$(MCU) -cbutterfly -b19200 -PCOM4 -Uflash:w:$(TARG).bin:a
 
 all: $(TARG) size mrproper
 

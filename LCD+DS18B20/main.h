@@ -18,9 +18,9 @@
 	#define F_CPU 8000000UL
 	#define OVF_BUF_COUNT 3 //кол-во переполнений таймера для проверки клавиш
 	#define LCD_LINE_SIZE 16
-	#define TEMP_UPDATE 2
+	#define TEMP_UPDATE 10
 	#define HEATER OCR1A
-	#define PID_OVF	200
-	#define MENUCOUNT 5
+	#define MENUCOUNT 4
+	#define SCREEN_UPDATE 20 // SCREEN_UPDATE * 0.032 = Time (sec)
 
 #endif /* MAIN_H_ */

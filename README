@@ -16,3 +16,8 @@ Change:
   26.03.2017:
 	1. add hardware
 	2. modify hardware
+  22.04.2017
+	1. Fix temperature bug
+	2. Size 4.3 -> 2.6
+	3. Delete sprintf
+	4. New onewire files

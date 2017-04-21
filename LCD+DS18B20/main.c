@@ -6,11 +6,11 @@
  */
 #include "main.h"
 
-
 int real_temperature, need_temperature = 600;
-char hstr[LCD_LINE_SIZE], lstr[LCD_LINE_SIZE], menu = 0, menu_sel = 0; //Строки выводимые на дисплей
-volatile unsigned char buffer_key_ovf = 0, buffer_pid_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, pid_time = 200;
-unsigned char kp = 4, ki = 1, kd = 3, cou = 0;
+volatile unsigned char buffer_key_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, menu = 0, selected = 0;
+unsigned char kp, ki, kd, cou = 0;
+char h_string[15], l_string[15];
+volatile unsigned int show_time = 0;
 
 void sysinit(void){
 	//Таймер обработчик клавиш
@@ -36,7 +36,6 @@ void sysinit(void){
 	ki = EEPROM_read_char(0x1);
 	kd = EEPROM_read_char(0x2);
 	need_temperature = EEPROM_read_int(0x3);
-	pid_time = EEPROM_read_char(0x5);
 	pid_init(kp,ki,kd);
 }
 
@@ -46,38 +45,32 @@ void key_plus(void){
 			menu++;
 			break;
 		case 1:
-			if(menu_sel)
+			if(selected)
 				need_temperature++;
 			else
 				menu++;
 			break;
 		case 2:
-			if(menu_sel)
+			if(selected)
 				kp++;
 			else
 				menu++;
 			break;
 		case 3:
-			if(menu_sel)
+			if(selected)
 				ki++;
 			else
 				menu++;
 			break;
 		case 4:
-			if(menu_sel)
+			if(selected)
 				kd++;
-			else
-				menu++;
-			break;
-		case 5:
-			if(menu_sel)
-				pid_time++;
 			else
 				menu++;
 			break;
 	}
 	if(menu > MENUCOUNT)
-		if(!menu_sel)
+		if(!selected)
 			menu = 0;
 }
 
@@ -87,43 +80,36 @@ void key_minus(void){
 			menu--;
 			break;
 		case 1:
-			if(menu_sel)
+			if(selected)
 				need_temperature--;
 			else
 				menu--;
 			break;
 		case 2:
-			if(menu_sel)
+			if(selected)
 				kp--;
 			else
 				menu--;
 			break;
 		case 3:
-			if(menu_sel)
+			if(selected)
 				ki--;
 			else
 				menu--;
 			break;
 		case 4:
-			if(menu_sel)
+			if(selected)
 				kd--;
-			else
-				menu--;
-			break;
-		case 5:
-			if(menu_sel)
-				pid_time--;
 			else
 				menu--;
 			break;
 	}
 	if(menu > MENUCOUNT)
-		if(!menu_sel)
+		if(!selected)
 			menu = MENUCOUNT;
 }
 
 ISR(TIMER0_OVF_vect){
-
 	if (buffer_key_ovf >= OVF_BUF_COUNT){ //Срабатывание 0.03264 * OVF_BUF_COUNT ms
 		tmp_buttons = pushedButton(PINB>>5);
 		if (tmp_buttons != KEY_UNP){
@@ -141,14 +127,13 @@ ISR(TIMER0_OVF_vect){
 			if(pushed_buttons == KEY_CEN){
 				//while((PINB>>5)!=KEY_UNP);
 				if(menu != 0){
-					if(menu_sel){
+					if(selected){
 						EEPROM_write(0x0, kp);
 						EEPROM_write(0x1, ki);
 						EEPROM_write(0x2, kd);
 						EEPROM_write_int(0x3, need_temperature);
-						EEPROM_write(0x5, pid_time);
 					}
-					menu_sel = !menu_sel;
+					selected = !selected;
 				}
 				pushed_buttons = KEY_UNP;
 			}
@@ -159,68 +144,121 @@ ISR(TIMER0_OVF_vect){
 		buffer_key_ovf = 0;
 	}
 
-	if(buffer_tem_ovf == TEMP_UPDATE){
-		real_temperature = 0x8000;
-		//real_temperature = readt();
-		buffer_tem_ovf = 0;
-	}
-	//
-	if(buffer_pid_ovf == pid_time){	// Срабатывание 0.03264 * PID_OVF ms
-		cou = calc_pwm(need_temperature, real_temperature);
-		buffer_pid_ovf = 0;
-	}
 	buffer_tem_ovf++;
-	buffer_pid_ovf++;
 	buffer_key_ovf++;
-}
-
-void printMainMenu(void){
-	lcd_clear();
-	lcd_str_out(hstr);
-	lcd_gotoxy(0,1);
-	lcd_str_out(lstr);
+	show_time++;
 }
 
 int main(void){
 	sysinit();
 	while(1){
-		if(real_temperature == 0x8000 || real_temperature == 0){
-			HEATER = 0;
-			cou = 0;
-		}
-		else
+		if(buffer_tem_ovf >= TEMP_UPDATE){
+			//real_temperature = 0x8000;
+			real_temperature = readtt_2();
+			if(real_temperature == 0x8000 || real_temperature == 0){
+				cou = 0;
+			}
+			else{
+				cou = calc_pwm(need_temperature, real_temperature);
+			}
 			HEATER = cou;
-		switch (menu){
-			case 0:
-				sprintf(hstr,"t=%d.%02d",(real_temperature>>4),(real_temperature%16)*625/100);
-				sprintf(lstr, "H=%d%%", cou*100/255);
-				break;
-			case 1:
-				sprintf(hstr, " %s","Set temp:");
-				sprintf(lstr," %d.%02d",(need_temperature>>4),(need_temperature%16)*625/100);
-				break;
-			case 2:
-				sprintf(hstr, " %s","Set kp:");
-				sprintf(lstr," %d",kp);
-				break;
-			case 3:
-				sprintf(hstr, " %s","Set ki:");
-				sprintf(lstr," %d",ki);
-				break;
-			case 4:
-				sprintf(hstr, " %s","Set kd:");
-				sprintf(lstr," %d",kd);
-				break;
-			case 5:
-				sprintf(hstr, " %s","Set PID time:");
-				sprintf(lstr," %d",pid_time);
-				break;
+			buffer_tem_ovf = 0;
 		}
-		if(menu_sel)
+		 if(show_time >= SCREEN_UPDATE){
+			switch (menu){
+				case 0:
+					h_string[0] = *"t";
+					h_string[1] = *"=";
+					h_string[2] = (real_temperature>>4)/10 + 0x30;
+					h_string[3] = (real_temperature>>4)%10 + 0x30;
+					h_string[4] = *",";
+					h_string[5] = (real_temperature%16)*625/1000 + 0x30;
+					h_string[6] = ((real_temperature%16)*625/100)%10 + 0x30;
+					h_string[7]	= *"\0";
+					
+					l_string[0] = *"H";
+					l_string[1] = *"=";
+					l_string[2] = cou/100 + 0x30;
+					l_string[3] = (cou/10)%10 + 0x30;
+					l_string[4] = cou%10 + 0x30;
+					l_string[5] = *"\0";
+					break;
+				case 1:
+					h_string[0] = *"s";
+					h_string[1] = *"e";
+					h_string[2] = *"t";
+					h_string[3] = *" ";
+					h_string[4] = *"t";
+					h_string[5] = *"e";
+					h_string[6] = *"m";
+					h_string[7] = *"p";
+					h_string[8] = *":";
+					h_string[9]	= *"\0";
+					
+					l_string[0] = *" ";
+					l_string[1] = (need_temperature>>4)/10 + 0x30;
+					l_string[2] = (need_temperature>>4)%10 + 0x30;
+					l_string[3] = *",";
+					l_string[4] = (need_temperature%16)*625/1000 + 0x30;
+					l_string[5] = ((need_temperature%16)*625/100)%10 + 0x30;
+					l_string[6] = *"\0";
+					break;
+				case 2:
+					h_string[0] = *"s";
+					h_string[1] = *"e";
+					h_string[2] = *"t";
+					h_string[3] = *" ";
+					h_string[4] = *"k";
+					h_string[5] = *"p";
+					h_string[6]	= *"\0";
+					
+					l_string[0] = *" ";
+					l_string[1] = kp/100 + 0x30;
+					l_string[2] = (kp/10)%10 + 0x30;
+					l_string[3] = kp%10 + 0x30;
+					l_string[4] = *"\0";
+					break;
+				case 3:
+					h_string[0] = *"s";
+					h_string[1] = *"e";
+					h_string[2] = *"t";
+					h_string[3] = *" ";
+					h_string[4] = *"k";
+					h_string[5] = *"i";
+					h_string[6]	= *"\0";
+					
+					l_string[0] = *" ";
+					l_string[1] = ki/100 + 0x30;
+					l_string[2] = (ki/10)%10 + 0x30;
+					l_string[3] = ki%10 + 0x30;
+					l_string[4] = *"\0";
+					break;
+				case 4:
+					h_string[0] = *"s";
+					h_string[1] = *"e";
+					h_string[2] = *"t";
+					h_string[3] = *" ";
+					h_string[4] = *"k";
+					h_string[5] = *"d";
+					h_string[6]	= *"\0";
+					
+					l_string[0] = *" ";
+					l_string[1] = kd/100 + 0x30;
+					l_string[2] = (kd/10)%10 + 0x30;
+					l_string[3] = kd%10 + 0x30;
+					l_string[4] = *"\0";
+					break;
+			}
+		show_time = 0;
+		if(selected)
 			if(menu)
-				lstr[0] = 0x3E;
-
-		printMainMenu();
-		delay_ms(400);
+				l_string[0] = 0x3E;
+		lcd_clear();
+		lcd_str_out(h_string);
+		lcd_gotoxy(0,1);
+		lcd_str_out(l_string);
+		}
+		delay_ms(1);
 	}
+	return 0;
 }

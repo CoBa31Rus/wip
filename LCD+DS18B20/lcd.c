@@ -7,40 +7,32 @@
 
 #include "lcd.h"
 
+#ifdef OLD_OUT
 void lcd_out(BYTE data){
-	if(data & 0x08)
-	{
-		LCD_PIN |= (1 << 7);
-	}
-	else
-	{
-		LCD_PIN &= ~(1 << 7);
-	}
-	if(data & 0x04)
-	{
-		LCD_PIN |= (1 << 6);
-	}
-	else
-	{
-		LCD_PIN &= ~(1 << 6);
-	}
-	if(data & 0x02)
-	{
-		LCD_PIN |= (1 << 5);
-	}
-	else
-	{
-		LCD_PIN &= ~(1 << 5);
-	}
 	if(data & 0x01)
-	{
 		LCD_PIN |= (1 << 4);
-	}
 	else
-	{
 		LCD_PIN &= ~(1 << 4);
-	}
+	if(data & 0x02)
+		LCD_PIN |= (1 << 5);
+	else
+		LCD_PIN &= ~(1 << 5);
+	if(data & 0x04)
+		LCD_PIN |= (1 << 6);
+	else
+		LCD_PIN &= ~(1 << 6);
+	if(data & 0x08)
+		LCD_PIN |= (1 << 7);
+	else
+		LCD_PIN &= ~(1 << 7);
 }
+#else
+void lcd_out(BYTE data){
+		data <<= LCD_SHIFT;
+		LCD_DATA_CLEAR;
+		LCD_PIN |= data;
+}
+#endif
 
 void lcd_com(BYTE com){
 	lcd_clear_rs();
@@ -95,10 +87,10 @@ void lcd_str_out(char *str){
 		lcd_char_out(*str);
 		str++;
 	}
+	
 }
 
-void lcd_gotoxy(BYTE x, BYTE y)
-{
+void lcd_gotoxy(BYTE x, BYTE y){
 	if(x > 39) x = 39;
 	if(x < 0) x = 0;
 	if(y > 3) y = 3;
@@ -109,31 +101,26 @@ void lcd_gotoxy(BYTE x, BYTE y)
 // Работа с дисплеем на прямую
 	lcd_clear_rs();
 
-	switch (y)
-	{
-		case 0:
-		{
+	switch(y){
+		case 0:{
 			temp |= (0x80 + x);
 			lcd_com(temp >> 4);			// Передача старших 4 бит
 			lcd_com(temp & 0x0F);		// Передача младших 4 бит
 			break;
 		}
-		case 1:
-		{
+		case 1:{
 			temp |= (0xC0 + x);
 			lcd_com(temp >> 4);			// Передача старших 4 бит
 			lcd_com(temp & 0x0F);		// Передача младших 4 бит
 			break;
 		}
-		case 2:
-		{
+		case 2:{
 			temp |= (0x94 + x);
 			lcd_com(temp >> 4);			// Передача старших 4 бит
 			lcd_com(temp & 0x0F);		// Передача младших 4 бит
 			break;
 		}
-		case 3:
-		{
+		case 3:{
 			temp |= (0xD4 + x);
 			lcd_com(temp >> 4);			// Передача старших 4 бит
 			lcd_com(temp & 0x0F);		// Передача младших 4 бит

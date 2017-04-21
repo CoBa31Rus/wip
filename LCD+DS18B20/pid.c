@@ -1,8 +1,8 @@
 
 #include "pid.h"
 
-unsigned char pK = 0, iK = 0, dK = 0; //Коэффициенты
-int pres, ires, dres; //Состовляющие регулятора
+unsigned char pK = 0, iK = 0, dK = 0;
+int pres, ires, dres;
 int lastTerm = 0;
 char sumError = 0;
 
