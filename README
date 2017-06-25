@@ -13,6 +13,10 @@
   6. ~~Сохранение параметров в EEPROM~~
 
 Change:
+  25.06.2017
+  	1. fix bug's with PID (now PID is work normal)
+	2. add function "DEBUG" with USART (send temp for change PID coefficient, just Define DEBUG)
+	
   26.03.2017:
 	1. add hardware
 	2. modify hardware
@@ -21,3 +25,6 @@ Change:
 	2. Size 4.3 -> 2.6
 	3. Delete sprintf
 	4. New onewire files
+	
+
+!!PS!! Sorry for my English =)
