@@ -43,9 +43,9 @@ void sysinit(void){
 	dK = EEPROM_read_char(0x2);
 	need_temperature = EEPROM_read_int(0x3);
 
-	pK = 40;
-	iK = 20;
-	dK = 80;
+	//pK = 40;
+	//iK = 20;
+	//dK = 80;
 
 #ifdef DEBUG
 	#define BAUD 9600L
