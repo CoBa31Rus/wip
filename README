@@ -11,8 +11,14 @@
   4. ~~Вывод параметров в виде простого меню.~~
   5. ~~Редактирование параметров.~~
   6. ~~Сохранение параметров в EEPROM~~
+  7. Generate EEPROM from make
 
 Change:
+  12.07.2017
+  	1. New Makefile, generate by standart WinAVR Mfile.
+	2. Fix warning with lcd.h
+	3. add #DEBUG for global val pid
+	4. add generate eeprom (but now is empty)
   25.06.2017
   	1. fix bug's with PID (now PID is work normal)
 	2. add function "DEBUG" with USART (send temp for change PID coefficient, just Define DEBUG)
