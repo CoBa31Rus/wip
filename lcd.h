@@ -9,7 +9,7 @@
 	#define LCD_H_
 	#include <avr/io.h>
 	#include <util/delay.h>
-	
+
 	//#define OLD_OUT
 
 	#define BYTE char
@@ -36,9 +36,9 @@
 	//#define CHAR_T			0xCB
 	//#define CHAR_F			0xFF
 
-	
-	
-	
+
+
+
 	//Описание типов дефайнов для меню
 	#define MAX_SCREENS			4
 	#define MAIN_SCREEN			0
@@ -48,11 +48,11 @@
 	#define KDIFF_SCREEN		4
 	//#define MAIN_SCREEN		0
 	//#define MAIN_SCREEN		0
-	
-	
+
+
 	void lcd_init(void);
 	void lcd_char_out(char data);
-	void lcd_clear();
+	void lcd_clear(void);
 	void lcd_str_out(char *str);
 	void lcd_gotoxy(BYTE x, BYTE y);
 

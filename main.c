@@ -8,16 +8,16 @@
 
 //#define DEBUG
 
-int real_temperature, need_temperature = 600;
+int real_temperature;
 volatile unsigned char buffer_key_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, menu = 0, selected = 0, show_time = 0;
-extern unsigned char pK, iK, dK;
+unsigned char pK, iK, dK;
+int need_temperature;
 char h_string[15], l_string[15];
 unsigned char cou = 0;
-//volatile unsigned int show_time = 0;
 
-
+#ifdef DEBUG
 extern int pres, ires, dres;
-
+#endif
 void sysinit(void){
 	//Таймер обработчик клавиш; Timer for Key
 		//Настройка таймера
@@ -43,10 +43,10 @@ void sysinit(void){
 	dK = EEPROM_read_char(0x2);
 	need_temperature = EEPROM_read_int(0x3);
 
-	//pK = 40;
-	//iK = 20;
-	//dK = 80;
-
+	pK = 40;
+	iK = 20;
+	dK = 80;
+	need_temperature = 600;
 #ifdef DEBUG
 	#define BAUD 9600L
 	#define UBRRL_value (F_CPU/(BAUD*16))-1
@@ -245,6 +245,9 @@ int main(void){
 					l_string[1] = pK/100 + 0x30;
 					l_string[2] = (pK/10)%10 + 0x30;
 					l_string[3] = pK%10 + 0x30;
+#ifndef DEBUG
+					l_string[4] = *"\0";
+#endif
 #ifdef DEBUG
 					l_string[4] = *" ";
 					l_string[5] = (pres/10000)+0x30;
@@ -268,6 +271,9 @@ int main(void){
 					l_string[2] = *".";
 					l_string[3] = (iK/10)%10 + 0x30;
 					l_string[4] = iK%10 + 0x30;
+#ifndef DEBUG
+					l_string[5] = *"\0";
+#endif
 #ifdef DEBUG
 					l_string[5] = *" ";
 					l_string[6] = (ires/10000)+0x30;
@@ -290,6 +296,9 @@ int main(void){
 					l_string[1] = dK/100 + 0x30;
 					l_string[2] = (dK/10)%10 + 0x30;
 					l_string[3] = dK%10 + 0x30;
+#ifndef DEBUG
+					l_string[4] = *"\0";
+#endif
 #ifdef DEBUG
 					l_string[4] = *" ";
 					l_string[5] = (dres/10000)+0x30;

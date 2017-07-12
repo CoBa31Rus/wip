@@ -1,7 +1,7 @@
 
 #include "pid.h"
 
-unsigned char pK = 0, iK = 0, dK = 0;
+extern unsigned char pK, iK, dK;
 int pres, ires, dres;
 int lastTerm = 0;
 int sumError = 0;
