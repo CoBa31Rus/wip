@@ -43,10 +43,10 @@ void sysinit(void){
 	dK = EEPROM_read_char(0x2);
 	need_temperature = EEPROM_read_int(0x3);
 
-	pK = 40;
-	iK = 20;
-	dK = 80;
-	need_temperature = 600;
+	//pK = 40;
+	//iK = 20;
+	//dK = 80;
+	//need_temperature = 600;
 #ifdef DEBUG
 	#define BAUD 9600L
 	#define UBRRL_value (F_CPU/(BAUD*16))-1
