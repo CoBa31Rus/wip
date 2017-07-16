@@ -14,6 +14,11 @@
   7. Generate EEPROM from make
 
 Change:
+  16.07.2017
+	1.Delete eeprom.c eeprom.h (Use from std AVR library)
+	2.Delete old Makefile (work fine)
+	3.Fix main.c for new eeprom func
+	4.Add eeprom create and upload
   12.07.2017
   	1. New Makefile, generate by standart WinAVR Mfile.
 	2. Fix warning with lcd.h

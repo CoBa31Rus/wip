@@ -4,14 +4,17 @@
  *  Created on: 07.11.2016
  *      Author: coba31rus
  */
+
+#include <avr/eeprom.h>
 #include "main.h"
 
 //#define DEBUG
 
-int real_temperature;
+int real_temperature, need_temperature;
 volatile unsigned char buffer_key_ovf = 0, buffer_tem_ovf = 0, tmp_buttons, pushed_buttons, menu = 0, selected = 0, show_time = 0;
 unsigned char pK, iK, dK;
-int need_temperature;
+unsigned char EEMEM eep_pK = 60, eep_iK = 20, eep_dK = 80;
+uint16_t EEMEM eep_need_temperature = 600;
 char h_string[15], l_string[15];
 unsigned char cou = 0;
 
@@ -38,10 +41,14 @@ void sysinit(void){
 	//Порт 1Wire
 	ONEWIRE_PORT &= ~_BV(ONEWIRE_PIN_NUM);
 	//ПИД регулятор
-	pK = EEPROM_read_char(0x0);
-	iK = EEPROM_read_char(0x1);
-	dK = EEPROM_read_char(0x2);
-	need_temperature = EEPROM_read_int(0x3);
+	pK = eeprom_read_byte(&eep_pK);
+	iK = eeprom_read_byte(&eep_iK);
+	dK = eeprom_read_byte(&eep_dK);
+	need_temperature = eeprom_read_word(&eep_need_temperature);
+	//pK = EEPROM_read_char(0x0);
+	//iK = EEPROM_read_char(0x1);
+	//dK = EEPROM_read_char(0x2);
+	//need_temperature = EEPROM_read_int(0x3);
 
 	//pK = 40;
 	//iK = 20;
@@ -156,10 +163,14 @@ ISR(TIMER0_OVF_vect){
 				while((PINB>>5)!=KEY_UNP);
 				if(menu != 0){
 					if(selected){
-						EEPROM_write(0x0, pK);
-						EEPROM_write(0x1, iK);
-						EEPROM_write(0x2, dK);
-						EEPROM_write_int(0x3, need_temperature);
+						eeprom_write_byte(&eep_pK, pK);
+						eeprom_write_byte(&eep_iK, iK);
+						eeprom_write_byte(&eep_dK, dK);
+						eeprom_write_word(&eep_need_temperature, need_temperature);
+						//EEPROM_write(0x0, pK);
+						//EEPROM_write(0x1, iK);
+						//EEPROM_write(0x2, dK);
+						//EEPROM_write_int(0x3, need_temperature);
 					}
 					selected = !selected;
 				}

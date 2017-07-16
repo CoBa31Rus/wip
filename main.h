@@ -10,7 +10,6 @@
 	#include "lcd.h"
 	#include "onewire.h"
 	#include <stdio.h>
-	#include "eeprom.h"
 	#include "button.h"
 	#include <avr/interrupt.h>
 	#include "pid.h"
